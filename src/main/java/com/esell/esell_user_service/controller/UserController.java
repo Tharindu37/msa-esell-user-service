@@ -1,6 +1,7 @@
 package com.esell.esell_user_service.controller;
 
 import com.esell.esell_user_service.dto.request.RequestUserDto;
+import com.esell.esell_user_service.dto.request.RequestUserLoginDeto;
 import com.esell.esell_user_service.entity.User;
 import com.esell.esell_user_service.exception.DuplicateEntryException;
 import com.esell.esell_user_service.repo.UserRepository;
@@ -38,6 +39,20 @@ public class UserController {
            );
         }
 
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<StandardResponse> login(@RequestBody RequestUserLoginDeto requestUserDto) {
+        try {
+            userService.login(requestUserDto);
+            return new ResponseEntity<>(
+                    new StandardResponse(201, null, "User Login"), HttpStatus.CREATED
+            );
+        }catch (RuntimeException e) {
+            return new ResponseEntity<>(
+                    new StandardResponse(500,null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
 //    @GetMapping
