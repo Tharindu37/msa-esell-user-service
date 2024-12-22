@@ -1,10 +1,17 @@
 package com.esell.esell_user_service.controller;
 
+import com.esell.esell_user_service.dto.request.RequestUserDto;
 import com.esell.esell_user_service.entity.User;
+import com.esell.esell_user_service.exception.DuplicateEntryException;
 import com.esell.esell_user_service.repo.UserRepository;
+import com.esell.esell_user_service.service.impl.impl.UserServiceImpl;
+import com.esell.esell_user_service.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.util.List;
 
@@ -12,24 +19,29 @@ import java.util.List;
 @RequestMapping("/user-service")
 public class UserController {
     @Autowired
-    private UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserServiceImpl userService;
 
-    public UserController(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public UserController(UserServiceImpl userService) {
+        this.userService = userService;
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        User newUser = new User();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setEmail(user.getEmail());
-        user.setUsername(user.getUsername());
-        return userRepository.save(user);
+    public ResponseEntity<StandardResponse> createUser(@RequestBody RequestUserDto requestUserDto) {
+        try {
+            userService.signup(requestUserDto);
+            return new ResponseEntity<>(
+                    new StandardResponse(201, null, "User Created"), HttpStatus.CREATED
+            );
+        } catch (RuntimeException e) {
+           return new ResponseEntity<>(
+                   new StandardResponse(500,null, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR
+           );
+        }
+
     }
 
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
+//    @GetMapping
+//    public List<User> getAllUsers() {
+//        return userRepository.findAll();
+//    }
 }
