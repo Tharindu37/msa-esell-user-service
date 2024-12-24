@@ -44,9 +44,9 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<StandardResponse> login(@RequestBody RequestUserLoginDeto requestUserDto) {
         try {
-            userService.login(requestUserDto);
+            String token =  userService.login(requestUserDto);
             return new ResponseEntity<>(
-                    new StandardResponse(201, null, "User Login"), HttpStatus.CREATED
+                    new StandardResponse(201, token, "User Login"), HttpStatus.CREATED
             );
         }catch (RuntimeException e) {
             return new ResponseEntity<>(

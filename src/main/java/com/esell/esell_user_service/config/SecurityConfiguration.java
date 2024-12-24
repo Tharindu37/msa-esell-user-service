@@ -27,7 +27,7 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
             authorizationManagerRequestMatcherRegistry
-                    .requestMatchers(HttpMethod.POST,"/user-service").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/user-service/**").permitAll()
                     .anyRequest().authenticated();
         });
 
